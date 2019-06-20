@@ -8,25 +8,28 @@ call vundle#begin()
 " ADDYOUR PLUGIN
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'vim-airline/vim-airline'
-Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/nerdtree', {'on': 'NERDTreeToggle'}
 Plugin 'majutsushi/tagbar'
 Plugin 'mattn/emmet-vim'
-Plugin 'Valloric/YouCompleteMe'
 Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'tpope/vim-surround'
+Plugin 'kien/ctrlp.vim'
 " js/css/html
 " for javascript.
 Plugin 'othree/yajs.vim'
 Plugin 'othree/javascript-libraries-syntax.vim'
 " for css
+Plugin 'ap/vim-css-color'
 Plugin 'hail2u/vim-css3-syntax'
-Plugin 'gko/vim-coloresque'
 Plugin 'groenewege/vim-less'
+Plugin 'iloginow/vim-stylus'
+Plugin 'cakebaker/scss-syntax.vim'
+" for vue 
+Plugin 'posva/vim-vue'
 " common
 Plugin 'Raimondi/delimitMate'
-Plugin 'nathanaelkane/vim-indent-guides'
 Plugin 'Valloric/MatchTagAlways'
 " Plugins 'vim-syntastic/syntastic'
 Plugin 'w0rp/ale'
@@ -39,12 +42,15 @@ Plugin 'haya14busa/incsearch-easymotion.vim'
 " Plugins for wechat_webdev
 Plugin 'chemzqm/wxapp.vim'
 Plugin 'neoclide/coc.nvim', {'do': 'yarn install'}
-Plugin 'ternjs/tern_for_vim'
+" Plugin 'ternjs/tern_for_vim'
 Plugin 'othree/xml.vim'
 
 " Plugins for drawing diagram
-Plugin 'aklt/plantuml-syntax'
-Plugin 'scrooloose/vim-slumlord'
+" Plugin 'aklt/plantuml-syntax'
+" Plugin 'scrooloose/vim-slumlord'
+" Plugin 'weirongxu/plantuml-previewer.vim'
+" Plugin 'tyru/open-browser.vim'
+" for vim jupyter integration
 call vundle#end()
 filetype plugin indent on
 " }}}
@@ -115,21 +121,28 @@ let g:user_emmet_settings = {
 " let g:syntastic_javascript_checkers = ['eslint']
 " let g:syntastic_html_checkers=['tidy', 'eslint']
 "
-" eslint
+" ale settings
 let g:ale_fixers = {'javascript':['eslint']}
 let g:ale_linters = {
 \        'javascript':['eslint'],
 \        'python':['pyflakes'],
+\        'c': ['gcc', 'clang'],
+\        'c++': ['gcc', 'clang'],
 \}
-let g:ale_sign_error = '>>'
-let g:ale_sign_warning = '--'
+let g:airline#extensions#ale#enabled = 1
+let g:ale_c_gcc_options="-Wall -O2 -std=gnu99"
+let g:ale_sign_error = 'x'
+let g:ale_sign_warning = '!'
 let g:ale_lint_on_save = 1
 let g:ale_lint_on_text_changed = 0
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 " mapping keys to moving between errors
 nmap <silent> <C-e> <Plug>(ale_previous_wrap)
 nmap <silent> <C-m> <Plug>(ale_next_wrap)
 "
-" " 修改高亮的背景色, 适应主题
+" 修改高亮的背景色, 适应主题
 " highlight SyntasticErrorSign guifg=white guibg=black
 "
 " " to see error location list
@@ -200,7 +213,7 @@ endfunction
 " Show signature help while editing
 autocmd CursorHoldI * silent! call CocAction('showSignatureHelp')
 " Highlight symbol under cursor on CursorHold
-autocmd CursorHold * silent call CocAction('highlight')
+" autocmd CursorHold * silent call CocAction('highlight')
 " Remap for rename current word
 nmap <leader>rn <Plug>(coc-rename)
 " Remap for format selected region
@@ -244,7 +257,6 @@ nnoremap <silent> <space>l  :<C-u>Denite coc-link<cr>
 "for vim-css3-syntax {{{
 augroup VimCSS3Syntax
   autocmd!
-
   autocmd FileType css setlocal iskeyword+=-
 augroup END
 "}}}
@@ -261,48 +273,48 @@ let g:mta_filetypes = {
 let g:mta_set_default_matchtag_color = 1
 " }}}
 
-" ycm {{{
-let g:ycm_global_ycm_extra_conf='~/.vim/bundle/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
-let g:ycm_semantic_triggers = {
- \   'javascript': ['.', 're!(?=[a-zA-Z]{3,4})'],
- \   'html': ['<', '"', '</', ' '],
- \   'scss,css': [ 're!^\s{2,4}', 're!:\s+' ],
- \ }
-let g:ycm_semantic_triggers.c = ['->', '.', '(', '[', '&']
-"Java Semantic Completion settings.
-" to enable java support, manually disable Syntastic java Diagnostics.
-let g:syntastic_java_checkers = []
-" when enabling java support, manually disable Eclim java diagnostics.
-let g:EclimFileTypeValidate = 0
-
-
-" YouCompleteMe 功能  
-" 补全功能在注释中同样有效  
-let g:ycm_complete_in_comments=0
-" 允许 vim 加载 .ycm_extra_conf.py 文件，不再提示  
-let g:ycm_confirm_extra_conf=0
-" 开启 YCM 基于标签引擎  
-let g:ycm_collect_identifiers_from_tags_files=1  
-" 引入 C++ 标准库tags，这个没有也没关系，只要.ycm_extra_conf.py文件中指定了正确的标准库路径  
-set tags+=/data/misc/software/misc./vim/stdcpp.tags  
-" YCM 集成 OmniCppComplete 补全引擎，设置其快捷键  
-inoremap <leader>; <C-x><C-o>  
-" 补全内容不以分割子窗口形式出现，只显示补全列表  
-set completeopt-=preview  
-" 从第一个键入字符就开始罗列匹配项  
-let g:ycm_min_num_of_chars_for_completion=1
-" 禁止缓存匹配项，每次都重新生成匹配项  
-let g:ycm_cache_omnifunc=0  
-" 语法关键字补全              
-let g:ycm_seed_identifiers_with_syntax=1  
-" 修改对C函数的补全快捷键，默认是CTRL + space，修改为ALT + ;  
-" let g:ycm_key_invoke_completion = '<M-;>'
-let g:ycm_key_invoke_completion = '<c-z>'  
-" 设置转到定义处的快捷键为ALT + G，这个功能非常赞  
-nmap <M-g> :YcmCompleter GoToDefinitionElseDeclaration <C-R>=expand("<cword>")<CR><CR>  
-" 设置按哪个键上屏
-let g:ycm_key_list_select_completion = ['<TAB>', '<Down>', '<Enter>']
-" }}}
+" " ycm {{{
+" let g:ycm_global_ycm_extra_conf='~/.vim/bundle/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
+" let g:ycm_semantic_triggers = {
+"  \   'javascript': ['.', 're!(?=[a-zA-Z]{3,4})'],
+"  \   'html': ['<', '"', '</', ' '],
+"  \   'scss,css': [ 're!^\s{2,4}', 're!:\s+' ],
+"  \ }
+" let g:ycm_semantic_triggers.c = ['->', '.', '(', '[', '&']
+" "Java Semantic Completion settings.
+" " to enable java support, manually disable Syntastic java Diagnostics.
+" let g:syntastic_java_checkers = []
+" " when enabling java support, manually disable Eclim java diagnostics.
+" let g:EclimFileTypeValidate = 0
+"
+"
+" " YouCompleteMe 功能
+" " 补全功能在注释中同样有效
+" let g:ycm_complete_in_comments=0
+" " 允许 vim 加载 .ycm_extra_conf.py 文件，不再提示
+" let g:ycm_confirm_extra_conf=0
+" " 开启 YCM 基于标签引擎
+" let g:ycm_collect_identifiers_from_tags_files=1
+" " 引入 C++ 标准库tags，这个没有也没关系，只要.ycm_extra_conf.py文件中指定了正确的标准库路径
+" set tags+=/data/misc/software/misc./vim/stdcpp.tags
+" " YCM 集成 OmniCppComplete 补全引擎，设置其快捷键
+" inoremap <leader>; <C-x><C-o>
+" " 补全内容不以分割子窗口形式出现，只显示补全列表
+" set completeopt-=preview
+" " 从第一个键入字符就开始罗列匹配项
+" let g:ycm_min_num_of_chars_for_completion=1
+" " 禁止缓存匹配项，每次都重新生成匹配项
+" let g:ycm_cache_omnifunc=0
+" " 语法关键字补全
+" let g:ycm_seed_identifiers_with_syntax=1
+" " 修改对C函数的补全快捷键，默认是CTRL + space，修改为ALT + ;
+" " let g:ycm_key_invoke_completion = '<M-;>'
+" let g:ycm_key_invoke_completion = '<c-z>'
+" " 设置转到定义处的快捷键为ALT + G，这个功能非常赞
+" nmap <M-g> :YcmCompleter GoToDefinitionElseDeclaration <C-R>=expand("<cword>")<CR><CR>
+" " 设置按哪个键上屏
+" let g:ycm_key_list_select_completion = ['<TAB>', '<Down>', '<Enter>']
+" " }}}
 
 " vim-easymotion {{{
 let g:EasyMotion_do_mapping = 0 " Disable default mappings
@@ -319,10 +331,11 @@ nmap s <Plug>(easymotion-overwin-f2)
 let g:EasyMotion_smartcase = 1
 
 " JK motions: Line motions
-map <Leader>l <Plug>(easymotion-lineforward)
-map <Leader>j <Plug>(easymotion-j)
-map <Leader>k <Plug>(easymotion-k)
-map <Leader>h <Plug>(easymotion-linebackward)
+let mapleader=","
+map <leader>l <Plug>(easymotion-lineforward)
+map <leader>j <Plug>(easymotion-j)
+map <leader>k <Plug>(easymotion-k)
+map <leader>h <Plug>(easymotion-linebackward)
 
 let g:EasyMotion_startofline = 0 " keep cursor column when JK motion
 "}}}
@@ -367,6 +380,11 @@ let g:UltiSnipsExpandTrigger="<c-j>"
 let g:UltiSnipsJumpForwardTrigger="<c-f>"
 let g:UltiSnipsJumpBackwardTrigger="<c-b>"
 "}}}
+
+"vue-vim {{{
+autocmd FileType vue syntax sync fromstart
+"}}}
+
 "}}}
 
 " General {{{
@@ -404,8 +422,9 @@ set wildmenu
 " 主题配置设置
 set t_Co=256
 colorscheme molokai
+set background=dark
 " let g:molokai_original = 1
-" let g:rehash256 = 1
+let g:rehash256 = 1
 " }}}
 
 " Format {{{
@@ -418,6 +437,7 @@ set expandtab
 " 让vim 将连续数量的空格视为一个制表符
 set softtabstop=4
 set foldmethod=manual
+set nofoldenable
 syntax enable
 syntax on
 " 设置行号和相对行号
@@ -427,6 +447,13 @@ set nu
 set scrolloff=6
 " 显示括号匹配
 set showmatch
+" 针对特定文件的缩进
+au BufNewFile,BufRead *.html,*.css,*.js,*.vue set tabstop=2
+au BufNewFile,BufRead *.html,*.css,*.js,*.vue set softtabstop=2
+au BufNewFile,BufRead *.html,*.css,*.js,*.vue set shiftwidth=2
+au BufNewFile,BufRead *.html,*.css,*.js,*.vue set expandtab
+au BufNewFile,BufRead *.html,*.css,*.js,*.vue set autoindent
+au BufNewFile,BufRead *.html,*.css,*.js,*.vue set fileformat=unix
 " }}}
 
 " Startup {{{
@@ -460,10 +487,18 @@ if !has('gui_runing')
     if has('termguicolors')
         set termguicolors
     end
-    let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-    let &t_SR = "\<Esc>]50;CursorShape=2\x7"
-    let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+    " let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+    " let &t_SR = "\<Esc>]50;CursorShape=2\x7"
+    " let &t_EI = "\<Esc>]50;CursorShape=0\x7"
     set timeoutlen=1000 ttimeoutlen=0
+endif
+" for the cursor shape setting
+if exists('$TMUX')
+  let &t_SI = "\ePtmux;\e\e[5 q\e\\"
+  let &t_EI = "\ePtmux;\e\e[2 q\e\\"
+else
+  let &t_SI = "\e[5 q"
+  let &t_EI = "\e[2 q"
 endif
 " }}}
 
@@ -497,9 +532,30 @@ nnoremap <leader>w :set wrap!<cr>
 "}}}
 
 " Others {{{
-" for ag the_sliver_search
-let g:ackprg = 'ag --vimgrep'
-" 空格显示用圆点表示, (默认)行尾提示$, 空格用.提示
-set listchars=space:.
 set list
+set lcs=space:.,tab:▸\ ,eol:¬
+" Add support for markdown files in tagbar. We should copy the
+" .markdown2ctags.py to the proper place to make it work.
+let g:tagbar_type_markdown = {
+    \ 'ctagstype': 'markdown',
+    \ 'ctagsbin' : '~/.vim/markdown2ctags.py',
+    \ 'ctagsargs' : '-f - --sort=yes',
+    \ 'kinds' : [
+        \ 's:sections',
+        \ 'i:images'
+    \ ],
+    \ 'sro' : '|',
+    \ 'kind2scope' : {
+        \ 's' : 'section',
+    \ },
+    \ 'sort': 0,
+\ }
+
+" vim colorscheme in fbterm
+if &term =="linux"
+    set t_Co=256
+    colo default
+endif
+" add support for groovy in gradle filetype
+au BufNewFile,BufRead *.gradle setf groovy
 " }}}
