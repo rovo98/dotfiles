@@ -1,58 +1,59 @@
 " custom settings added by rovo98
 
-"Vundle Section Start {{{
-set nocompatible
-filetype off
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" ADDYOUR PLUGIN
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'vim-airline/vim-airline'
-Plugin 'scrooloose/nerdtree', {'on': 'NERDTreeToggle'}
-Plugin 'majutsushi/tagbar'
-Plugin 'mattn/emmet-vim'
-Plugin 'SirVer/ultisnips'
-Plugin 'honza/vim-snippets'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'tpope/vim-surround'
-Plugin 'kien/ctrlp.vim'
+"vim-plug Section Start {{{
+" Specify a directory for plugins
+" - For Neovim: stdpath('data') . '/plugged'
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
+
+" Make sure you use single quotes
+Plug 'VundleVim/Vundle.vim'
+Plug 'vim-airline/vim-airline'
+Plug 'scrooloose/nerdtree', {'on': 'NERDTreeToggle'}
+Plug 'majutsushi/tagbar'
+Plug 'mattn/emmet-vim'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'scrooloose/nerdcommenter'
+Plug 'tpope/vim-surround'
+Plug 'kien/ctrlp.vim'
+
 " js/css/html
 " for javascript.
-Plugin 'othree/yajs.vim'
-Plugin 'othree/javascript-libraries-syntax.vim'
-" for css
-Plugin 'ap/vim-css-color'
-Plugin 'hail2u/vim-css3-syntax'
-Plugin 'groenewege/vim-less'
-Plugin 'iloginow/vim-stylus'
-Plugin 'cakebaker/scss-syntax.vim'
+Plug 'othree/yajs.vim'
+Plug 'othree/javascript-libraries-syntax.vim'
+" for c
+Plug 'ap/vim-css-color'
+Plug 'hail2u/vim-css3-syntax'
+Plug 'groenewege/vim-less'
+Plug 'iloginow/vim-stylus'
+Plug 'cakebaker/scss-syntax.vim'
 " for vue 
-Plugin 'posva/vim-vue'
+" Plugin 'posva/vim-vue'
 " common
-Plugin 'Raimondi/delimitMate'
-Plugin 'Valloric/MatchTagAlways'
+Plug 'Raimondi/delimitMate'
+Plug 'Valloric/MatchTagAlways'
+Plug 'tpope/vim-fugitive'
+" Plugin for editorconfig file.
+Plug 'editorconfig/editorconfig-vim'
+
 " Plugins 'vim-syntastic/syntastic'
-Plugin 'w0rp/ale'
-Plugin 'Chiel92/vim-autoformat'
+Plug 'w0rp/ale'
+Plug 'Chiel92/vim-autoformat'
 
-Plugin 'easymotion/vim-easymotion'
-Plugin 'haya14busa/incsearch.vim'
-Plugin 'haya14busa/incsearch-easymotion.vim'
+Plug 'easymotion/vim-easymotion'
+Plug 'haya14busa/incsearch.vim'
+Plug 'haya14busa/incsearch-easymotion.vim'
 
-" Plugins for wechat_webdev
-Plugin 'chemzqm/wxapp.vim'
-Plugin 'neoclide/coc.nvim', {'do': 'yarn install'}
-" Plugin 'ternjs/tern_for_vim'
-Plugin 'othree/xml.vim'
+Plug 'neoclide/coc.nvim',{'branch':'release'}
+Plug 'othree/xml.vim'
+Plug 'leafgarland/typescript-vim'
 
-" Plugins for drawing diagram
-" Plugin 'aklt/plantuml-syntax'
-" Plugin 'scrooloose/vim-slumlord'
-" Plugin 'weirongxu/plantuml-previewer.vim'
-" Plugin 'tyru/open-browser.vim'
-" for vim jupyter integration
-call vundle#end()
-filetype plugin indent on
+" go language support
+Plug 'fatih/vim-go'
+
+" Initialize plugin system
+call plug#end()
 " }}}
 
 " Plugins customize {{{
@@ -69,6 +70,50 @@ map <C-n> :NERDTreeToggle<CR>
 
 " tagbar {{{
 nmap <F8> :TagbarToggle<CR> 
+" Add support for markdown files in tagbar. We should copy the
+" .markdown2ctags.py to the proper place to make it work.
+let g:tagbar_type_markdown = {
+    \ 'ctagstype': 'markdown',
+    \ 'ctagsbin' : '~/.vim/markdown2ctags.py',
+    \ 'ctagsargs' : '-f - --sort=yes',
+    \ 'kinds' : [
+        \ 's:sections',
+        \ 'i:images'
+    \ ],
+    \ 'sro' : '|',
+    \ 'kind2scope' : {
+        \ 's' : 'section',
+    \ },
+    \ 'sort': 0,
+\ }
+" add support for go filetype.
+let g:tagbar_type_go = {
+	\ 'ctagstype' : 'go',
+	\ 'kinds'     : [
+		\ 'p:package',
+		\ 'i:imports:1',
+		\ 'c:constants',
+		\ 'v:variables',
+		\ 't:types',
+		\ 'n:interfaces',
+		\ 'w:fields',
+		\ 'e:embedded',
+		\ 'm:methods',
+		\ 'r:constructor',
+		\ 'f:functions'
+	\ ],
+	\ 'sro' : '.',
+	\ 'kind2scope' : {
+		\ 't' : 'ctype',
+		\ 'n' : 'ntype'
+	\ },
+	\ 'scope2kind' : {
+		\ 'ctype' : 't',
+		\ 'ntype' : 'n'
+	\ },
+	\ 'ctagsbin'  : 'gotags',
+	\ 'ctagsargs' : '-sort -silent'
+\ }
 " }}}
 
 " emmet settings for wxapp.vim{{{
@@ -128,6 +173,7 @@ let g:ale_linters = {
 \        'python':['pyflakes'],
 \        'c': ['gcc', 'clang'],
 \        'c++': ['gcc', 'clang'],
+\        'go': ['gopls'],
 \}
 let g:airline#extensions#ale#enabled = 1
 let g:ale_c_gcc_options="-Wall -O2 -std=gnu99"
@@ -273,49 +319,6 @@ let g:mta_filetypes = {
 let g:mta_set_default_matchtag_color = 1
 " }}}
 
-" " ycm {{{
-" let g:ycm_global_ycm_extra_conf='~/.vim/bundle/YouCompleteMe/third_party/ycmd/.ycm_extra_conf.py'
-" let g:ycm_semantic_triggers = {
-"  \   'javascript': ['.', 're!(?=[a-zA-Z]{3,4})'],
-"  \   'html': ['<', '"', '</', ' '],
-"  \   'scss,css': [ 're!^\s{2,4}', 're!:\s+' ],
-"  \ }
-" let g:ycm_semantic_triggers.c = ['->', '.', '(', '[', '&']
-" "Java Semantic Completion settings.
-" " to enable java support, manually disable Syntastic java Diagnostics.
-" let g:syntastic_java_checkers = []
-" " when enabling java support, manually disable Eclim java diagnostics.
-" let g:EclimFileTypeValidate = 0
-"
-"
-" " YouCompleteMe 功能
-" " 补全功能在注释中同样有效
-" let g:ycm_complete_in_comments=0
-" " 允许 vim 加载 .ycm_extra_conf.py 文件，不再提示
-" let g:ycm_confirm_extra_conf=0
-" " 开启 YCM 基于标签引擎
-" let g:ycm_collect_identifiers_from_tags_files=1
-" " 引入 C++ 标准库tags，这个没有也没关系，只要.ycm_extra_conf.py文件中指定了正确的标准库路径
-" set tags+=/data/misc/software/misc./vim/stdcpp.tags
-" " YCM 集成 OmniCppComplete 补全引擎，设置其快捷键
-" inoremap <leader>; <C-x><C-o>
-" " 补全内容不以分割子窗口形式出现，只显示补全列表
-" set completeopt-=preview
-" " 从第一个键入字符就开始罗列匹配项
-" let g:ycm_min_num_of_chars_for_completion=1
-" " 禁止缓存匹配项，每次都重新生成匹配项
-" let g:ycm_cache_omnifunc=0
-" " 语法关键字补全
-" let g:ycm_seed_identifiers_with_syntax=1
-" " 修改对C函数的补全快捷键，默认是CTRL + space，修改为ALT + ;
-" " let g:ycm_key_invoke_completion = '<M-;>'
-" let g:ycm_key_invoke_completion = '<c-z>'
-" " 设置转到定义处的快捷键为ALT + G，这个功能非常赞
-" nmap <M-g> :YcmCompleter GoToDefinitionElseDeclaration <C-R>=expand("<cword>")<CR><CR>
-" " 设置按哪个键上屏
-" let g:ycm_key_list_select_completion = ['<TAB>', '<Down>', '<Enter>']
-" " }}}
-
 " vim-easymotion {{{
 let g:EasyMotion_do_mapping = 0 " Disable default mappings
 
@@ -384,7 +387,15 @@ let g:UltiSnipsJumpBackwardTrigger="<c-b>"
 "vue-vim {{{
 autocmd FileType vue syntax sync fromstart
 "}}}
-
+" vim-go {{{
+let g:go_def_mode='gopls'
+let g:go_info_mode='gopls'
+"}}}
+" editorconfig {{{
+" to ensure work with fugitive and to avoid loading EditorConfig for any
+" remote files or ssh
+let g:EditorConfig_exclude_patterns = ['fugitive://.\*', 'scp://.\*']
+"}}}
 "}}}
 
 " General {{{
@@ -448,12 +459,12 @@ set scrolloff=6
 " 显示括号匹配
 set showmatch
 " 针对特定文件的缩进
-au BufNewFile,BufRead *.html,*.css,*.js,*.vue set tabstop=2
-au BufNewFile,BufRead *.html,*.css,*.js,*.vue set softtabstop=2
-au BufNewFile,BufRead *.html,*.css,*.js,*.vue set shiftwidth=2
-au BufNewFile,BufRead *.html,*.css,*.js,*.vue set expandtab
-au BufNewFile,BufRead *.html,*.css,*.js,*.vue set autoindent
-au BufNewFile,BufRead *.html,*.css,*.js,*.vue set fileformat=unix
+au BufNewFile,BufRead *.html,*.css,*.sass,*.js,*.vue,*.yml set tabstop=2
+au BufNewFile,BufRead *.html,*.css,*.sass,*.js,*.vue,*.yml set softtabstop=2
+au BufNewFile,BufRead *.html,*.css,*.sass,*.js,*.vue,*.yml set shiftwidth=2
+au BufNewFile,BufRead *.html,*.css,*.sass,*.js,*.vue,*.yml set expandtab
+au BufNewFile,BufRead *.html,*.css,*.sass,*.js,*.vue,*.yml set autoindent
+au BufNewFile,BufRead *.html,*.css,*.sass,*.js,*.vue,*.yml set fileformat=unix
 " }}}
 
 " Startup {{{
@@ -534,22 +545,6 @@ nnoremap <leader>w :set wrap!<cr>
 " Others {{{
 set list
 set lcs=space:.,tab:▸\ ,eol:¬
-" Add support for markdown files in tagbar. We should copy the
-" .markdown2ctags.py to the proper place to make it work.
-let g:tagbar_type_markdown = {
-    \ 'ctagstype': 'markdown',
-    \ 'ctagsbin' : '~/.vim/markdown2ctags.py',
-    \ 'ctagsargs' : '-f - --sort=yes',
-    \ 'kinds' : [
-        \ 's:sections',
-        \ 'i:images'
-    \ ],
-    \ 'sro' : '|',
-    \ 'kind2scope' : {
-        \ 's' : 'section',
-    \ },
-    \ 'sort': 0,
-\ }
 
 " vim colorscheme in fbterm
 if &term =="linux"
