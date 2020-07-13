@@ -7,33 +7,33 @@
 call plug#begin('~/.vim/plugged')
 
 " Make sure you use single quotes
-Plug 'VundleVim/Vundle.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'scrooloose/nerdtree', {'on': 'NERDTreeToggle'}
 Plug 'majutsushi/tagbar'
 Plug 'mattn/emmet-vim'
-Plug 'SirVer/ultisnips'
+" Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-surround'
 Plug 'kien/ctrlp.vim'
+Plug 'sheerun/vim-polyglot'
+Plug 'airblade/vim-gitgutter'
 
 " js/css/html
 " for javascript.
 Plug 'othree/yajs.vim'
 Plug 'othree/javascript-libraries-syntax.vim'
-" for c
 Plug 'ap/vim-css-color'
 Plug 'hail2u/vim-css3-syntax'
 Plug 'groenewege/vim-less'
-Plug 'iloginow/vim-stylus'
+" Plug 'iloginow/vim-stylus'
 Plug 'cakebaker/scss-syntax.vim'
 " for vue 
 " Plugin 'posva/vim-vue'
 " common
 Plug 'Raimondi/delimitMate'
 Plug 'Valloric/MatchTagAlways'
-Plug 'tpope/vim-fugitive'
+" Plug 'tpope/vim-fugitive'
 " Plugin for editorconfig file.
 Plug 'editorconfig/editorconfig-vim'
 
@@ -50,7 +50,16 @@ Plug 'othree/xml.vim'
 Plug 'leafgarland/typescript-vim'
 
 " go language support
-Plug 'fatih/vim-go'
+Plug 'fatih/vim-go', {'for': ['go']}
+
+" for plantuml
+Plug 'aklt/plantuml-syntax'
+Plug 'scrooloose/vim-slumlord'
+Plug 'tyru/open-browser.vim'
+Plug 'weirongxu/plantuml-previewer.vim'
+
+" for latex writing
+Plug 'vim-latex/vim-latex'
 
 " Initialize plugin system
 call plug#end()
@@ -257,7 +266,7 @@ function! s:show_documentation()
   endif
 endfunction
 " Show signature help while editing
-autocmd CursorHoldI * silent! call CocAction('showSignatureHelp')
+autocmd CursorHoldI * silent! call CocActionAsync('showSignatureHelp')
 " Highlight symbol under cursor on CursorHold
 " autocmd CursorHold * silent call CocAction('highlight')
 " Remap for rename current word
@@ -298,6 +307,22 @@ nnoremap <silent> <space>c  :<C-u>Denite coc-command<cr>
 nnoremap <silent> <space>s  :<C-u>Denite coc-service<cr>
 " Show links of current buffer
 nnoremap <silent> <space>l  :<C-u>Denite coc-link<cr>
+
+" Use <C-l> for trigger snippet expand.
+imap <C-l> <Plug>(coc-snippets-expand)
+
+" Use <C-j> for select text for visual placeholder of snippet.
+vmap <C-j> <Plug>(coc-snippets-select)
+
+" Use <C-j> for jump to next placeholder, it's default of coc.nvim
+let g:coc_snippet_next = '<c-j>'
+
+" Use <C-k> for jump to previous placeholder, it's default of coc.nvim
+let g:coc_snippet_prev = '<c-k>'
+
+" Use <C-j> for both expand and jump (make expand higher priority.)
+imap <C-j> <Plug>(coc-snippets-expand-jump)
+
 " }}}
 
 "for vim-css3-syntax {{{
@@ -379,7 +404,7 @@ let g:NERDToggleCheckAllLines = 1
 " }}}
 
 "ultisnips settings {{{
-let g:UltiSnipsExpandTrigger="<c-j>"
+let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-f>"
 let g:UltiSnipsJumpBackwardTrigger="<c-b>"
 "}}}
@@ -396,6 +421,14 @@ let g:go_info_mode='gopls'
 " remote files or ssh
 let g:EditorConfig_exclude_patterns = ['fugitive://.\*', 'scp://.\*']
 "}}}
+" vim-latex {{{
+" 使grep总是生成文件名
+set grepprg=grep\ -nH\ $*
+" vim默认把空的tex文件设为plaintex而不是tex，导致latex-suite不被加载
+let g:tex_flavor='latex'
+set iskeyword+=:
+autocmd BufEnter *.tex set sw=2
+" }}}
 "}}}
 
 " General {{{
@@ -431,11 +464,10 @@ set smartcase
 " vim 自身命令行模式智能补全
 set wildmenu
 " 主题配置设置
-set t_Co=256
-colorscheme molokai
-set background=dark
-" let g:molokai_original = 1
-let g:rehash256 = 1
+colorscheme onedark
+" colorscheme molokai
+let g:airline_theme='onedark'
+let g:onedark_termcolors=256
 " }}}
 
 " Format {{{
@@ -538,8 +570,6 @@ nnoremap <S-j> :resize -5<cr>
 nnoremap <S-k> :resize +5<cr>
 nnoremap <S-h> :vertical resize -5<cr>
 nnoremap <S-l> :vertical resize +5<cr>
-
-nnoremap <leader>w :set wrap!<cr>
 "}}}
 
 " Others {{{
@@ -547,10 +577,10 @@ set list
 set lcs=space:.,tab:▸\ ,eol:¬
 
 " vim colorscheme in fbterm
-if &term =="linux"
-    set t_Co=256
-    colo default
-endif
+" if &term =="linux"
+"     set t_Co=256
+"     colo default
+" endif
 " add support for groovy in gradle filetype
 au BufNewFile,BufRead *.gradle setf groovy
 " }}}
