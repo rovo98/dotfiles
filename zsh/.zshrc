@@ -1,3 +1,11 @@
+# Having tmux loaded by default when zsh launched.
+# and exit the zsh after exiting the tmux
+# if [ "$TMUX" = "" ]; then tmux; fi
+# if [ -t 0 ] && [[ -z $TMUX ]] && [[ $- = *i* ]]; then exec tmux; fi
+#
+# Enter the fbterm automatically
+# [[ $(tty) == \/dev\/tty[0-9]* ]] && fbterm && echo && exit
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -7,9 +15,11 @@ export ZSH="/home/rovo98/.oh-my-zsh"
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-#ZSH_THEME="robbyrussell"
-#ZSH_THEME="agnoster"
-ZSH_THEME="tjkirch_mod"
+# ZSH_THEME="agnoster"
+# ZSH_THEME="tjkirch_mod"
+# ZSH_THEME="dst"
+ZSH_THEME="robbyrussell"
+# ZSH_THEME="random"
 
 # Set list of themes to load
 # Setting this variable when ZSH_THEME=random
@@ -30,7 +40,7 @@ ZSH_THEME="tjkirch_mod"
 # DISABLE_AUTO_UPDATE="true"
 
 # Uncomment the following line to change how often to auto-update (in days).
-export UPDATE_ZSH_DAYS=30
+export UPDATE_ZSH_DAYS=7
 
 # Uncomment the following line to disable colors in ls.
 # DISABLE_LS_COLORS="true"
@@ -39,7 +49,7 @@ export UPDATE_ZSH_DAYS=30
 # DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
-ENABLE_CORRECTION="true"
+# ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
 COMPLETION_WAITING_DOTS="true"
@@ -64,14 +74,9 @@ HIST_STAMPS="yyyy-mm-dd"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(
-  git
-  autojump
-  zsh-syntax-highlighting
-  zsh-autosuggestions
-  colored-man-pages
-)
-[[ -s /etc/profile.d/autojump.sh ]] && . /etc/profile.d/autojump.sh
+plugins=(git autojump zsh-syntax-highlighting zsh-autosuggestions colored-man-pages docker docker-compose redis-cli git-extras tmux fzf gradle-completion rustup)
+# [[ -s /etc/profile.d/autojump.sh ]] && . /etc/profile.d/autojump.sh
+[[ -s /etc/profile.d/autojump.sh ]] && source /etc/profile.d/autojump.sh
 
 source $ZSH/oh-my-zsh.sh
 
@@ -89,6 +94,7 @@ export LANG=en_US.UTF-8
 # else
 #   export EDITOR='mvim'
 # fi
+export EDITOR='vim'
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -104,12 +110,70 @@ export LANG=en_US.UTF-8
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias ls="lsd"
 alias ll="ls -l"
 alias la="ls -a"
 alias cp="cp -i"
 alias mv="mv -i"
 alias more="less"
 alias cat="bat"
+alias sudo="sudo "
+alias s='neofetch'
+alias trm='trash'
+alias v='vim'
+alias nv='nvim'
+alias py3='python3'
+alias py2='python2'
+alias nvrun='__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME="nvidia" __VK_LAYER_NV_optimus="NVIDIA_only"'
 
 # key binding for zsh-autosuggestions
 bindkey '^ ' autosuggest-accept
+
+# dotnet sdk Telemetry
+export DOTNET_CLI_TELEMETRY_OUTPUT=1
+
+# default layout for fzf.
+# export FZF_DEFAULT_OPTS='--height 50% --layout=reverse --border'
+# export FZF_DEFAULT_OPTS="--height 50% --layout=reverse --preview 'bat --style=numbers --color=always {}'"
+export FZF_DEFAULT_OPTS="--height 50% --layout=reverse"
+
+
+#
+# # ex - archive extractor
+# # usage: ex <file>
+ex ()
+{
+  if [ -f $1 ] ; then
+    case $1 in
+      *.tar.bz2)   tar xjf $1   ;;
+      *.tar.gz)    tar xzf $1   ;;
+      *.bz2)       bunzip2 $1   ;;
+      *.rar)       unrar x $1     ;;
+      *.gz)        gunzip $1    ;;
+      *.tar)       tar xf $1    ;;
+      *.tbz2)      tar xjf $1   ;;
+      *.tgz)       tar xzf $1   ;;
+      *.zip)       unzip $1     ;;
+      *.Z)         uncompress $1;;
+      *.7z)        7z x $1      ;;
+      *)           echo "'$1' cannot be extracted via ex()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+
+source /etc/profile
+source /usr/share/nvm/init-nvm.sh
+
+# jEnv 
+export PATH="$HOME/.jenv/bin:$PATH"
+eval "$(jenv init -)"
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+# Handle ugly directories color highlighting
+export LS_COLORS="$LS_COLORS:ow=1;34:tw=1;34:"
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
