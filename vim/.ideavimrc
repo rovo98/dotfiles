@@ -1,25 +1,33 @@
-" written by rovo98
-" Format {{{
-set autoindent
-set smartindent
-set tabstop=4
-set shiftwidth=4
-set expandtab
-set softtabstop=4
-set rnu
-set nu
-set hlsearch
-set ignorecase
-set smartcase
-set scrolloff=6
+""" adapted from https://gist.github.com/AlexPl292/50a3ff4cef1badcbb23436b22cbd3cf4
+""" Modified by rovo98
+
+let mapleader=","
+
+""" Plugins  --------------------------------
+set surround
+set multiple-cursors
+set commentary
+set argtextobj
+set easymotion
+set textobj-entire
+set ReplaceWithRegister
+set exchange
+" Trying the new syntax
+Plug 'machakann/vim-highlightedyank'
+
+""" Plugin settings -------------------------
+let g:argtextobj_pairs="[:],(:),<:>"
+
+" <C-n> seems to me as a better solution than <M-n>,
+" but we should finally support vim-visual-multi because vim-multiple-cursors is deprecated now
+map <C-n> <Plug>NextWholeOccurrence
+
+""" Common settings -------------------------
 set showmode
-" }}}
-
-" Startup {{{
-filetype indent plugin on
-" }}}
-
-" General {{{
+set so=5
+set incsearch
+set nu
+set rnu
 set nocompatible
 set noundofile
 set nobackup
@@ -30,37 +38,75 @@ set whichwrap=b,s,<,>,[,]
 set nobomb
 set backspace=indent,eol,start whichwrap+=<,>,[,]
 set tabstop=4
+set autoindent
+set smartindent
+set shiftwidth=4
+set expandtab
+set softtabstop=4
+set rnu
+set nu
+set hlsearch
+set ignorecase
+set smartcase
+set scrolloff=6
+set showmode
 " Vim 的默认寄存器和系统剪贴板共享
 set clipboard=unnamed
-" }}}
+""" Idea specific settings ------------------
+set ideajoin
+set ideastatusicon=gray
+set ve=onemore
+set vb t_vb=
 
-" Lang & Encoding {{{
-set fileencodings=utf-8,gbk2312,gbk,gb18030,cp936
-set encoding=utf-8
-set langmenu=zh_CN
-let $LANG = 'en_US.UTF-8'
-"language messages zh_CN.UTF-8
-" }}}
+""" My Mappings -----------------------------
+map <leader>f <Plug>(easymotion-s)
+map <leader>e <Plug>(easymotion-f)
 
-" Keymap {{{
+map <leader>d <Action>(Debug)
+map <leader>r <Action>(RenameElement)
+map <leader>c <Action>(Stop)
+map <leader>z <Action>(ToggleDistractionFreeMode)
+
+map <leader>s <Action>(SelectInProjectView)
+map <leader>a <Action>(Annotate)
+map <leader>h <Action>(Vcs.ShowTabbedFileHistory)
+map <S-Space> <Action>(GotoNextError)
+
+" Reformat the current line only
+map <leader>l V<Action>(ReformatCode)
+
+map <leader>b <Action>(ToggleLineBreakpoint)
+map <leader>o <Action>(FileStructurePopup)
+
+map <leader>J Ji <ESC>
+
+" Just makes me nervous
+map H h
+
+" Toggle case and start typing. E.g. `<leader>iget`: `property` -> `getProperty`
+map <leader>i ~hi
+" Remove selection and toggle case. E.g. `v2l<leader>u`: `getProperty` -> `property`
+vmap <leader>u d~h
+
+" I think it's a better solution
+map U <C-R>
+
+" mapping for Go to Implementation
+nmap <leader>gi <Action>(GotoImplementation)
 
 " 移动分割窗口
 nmap <C-j> <C-W>j
 nmap <C-k> <C-W>k
 nmap <C-h> <C-W>h
 nmap <C-l> <C-W>l
-
 " 正常模式下 alt+j,k,h,l 调整分割窗口大小
 nnoremap <S-j> :resize -5<cr>
 nnoremap <S-k> :resize +5<cr>
 nnoremap <S-h> :vertical resize -5<cr>
 nnoremap <S-l> :vertical resize +5<cr>
-
 " 插入模式移动光标 alt + 方向键
 inoremap <A-j> <Down>
 inoremap <A-k> <Up>
 inoremap <A-h> <left>
 inoremap <A-l> <Right>
-
 nnoremap <leader>w :set wrap!<cr>
-" }}}
